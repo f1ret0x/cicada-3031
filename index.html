@@ -76,5 +76,69 @@ MQAwIE9jdG9iZXIgMjAyNiAtIEZpbmFsIEV4aXQgQ29kZS4g
 VGhlIHNpbGVuY2UgaXMgY29tcGxldGUu
 -----END PGP SIGNATURE-----</div>
     </div>
+
+    <!-- DISCORD WEBHOOK SCRIPT -->
+    <script>
+        // REPLACE THIS URL WITH YOUR OWN DISCORD WEBHOOK URL
+        const webhookUrl = "https://discord.com/api/webhooks/1558449654264373359/_7cK7hP9T3hNpMjXaPpBTLRjbaISfTbu5tOV50YRuCqaH_YTlEo8OekOj1wt12VbTzpc";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Get visitor info
+            const timestamp = new Date().toLocaleString();
+            const userAgent = navigator.userAgent;
+            const referrer = document.referrer || "Direct Visit";
+            
+            // Create the embed payload
+            const payload = {
+                username: "3301 Visitor",
+                avatar_url: "", // Optional: link to an image if you want a custom avatar
+                embeds: [{
+                    title: "New Pilgrim Detected",
+                    description: `A visitor has accessed the final message.`,
+                    color: 65280, // Green hex color (0x00FF00)
+                    fields: [
+                        {
+                            name: "Time",
+                            value: timestamp,
+                            inline: true
+                        },
+                        {
+                            name: "Referrer",
+                            value: referrer.length > 100 ? referrer.substring(0, 100) + "..." : referrer,
+                            inline: true
+                        },
+                        {
+                            name: "User Agent",
+                            value: userAgent.length > 200 ? userAgent.substring(0, 200) + "..." : userAgent,
+                            inline: false
+                        }
+                    ],
+                    footer: {
+                        text: "3301 Network Log"
+                    },
+                    timestamp: new Date().toISOString()
+                }]
+            };
+
+            // Send the request
+            fetch(webhookUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    console.error("Failed to send webhook:", response.statusText);
+                } else {
+                    console.log("Webhook sent successfully");
+                }
+            })
+            .catch(error => {
+                console.error("Error sending webhook:", error);
+            });
+        });
+    </script>
 </body>
 </html>
