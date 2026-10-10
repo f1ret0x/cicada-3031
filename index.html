@@ -3,142 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3301 - Final Message</title>
+    <title>The Final Path</title>
     <style>
         body {
+            background-color: #0a0a0a; /* Dark background */
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace; /* Monospace for that digital/PGP feel */
+            margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-            font-family: 'Courier New', Courier, monospace;
-            background-color: #111;
-            color: #00ff00;
         }
         .container {
             max-width: 600px;
             width: 100%;
-            text-align: left;
-            line-height: 1.6;
-        }
-        h1 {
-            font-size: 2rem;
-            letter-spacing: 4px;
-            text-align: center;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
+            background-color: #141414;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border: 1px solid #333;
         }
         p {
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 1rem;
         }
         .bold-text {
             font-weight: bold;
             color: #ffffff;
+            font-size: 1.1rem;
         }
         .pgp-block {
-            background-color: #051105;
-            border: 1px dashed #00ff00;
+            background-color: #000;
+            border: 1px solid #444;
             padding: 15px;
-            font-size: 0.85rem;
-            word-wrap: break-word;
             white-space: pre-wrap;
-            letter-spacing: 0px;
-            margin-top: 2rem;
+            word-break: break-all;
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 20px;
+            border-radius: 4px;
         }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-top: 20px;
+            background-color: #5865F2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #4752c4;
+        }
+        button:disabled {
+            background-color: #555;
+            cursor: wait;
+        }
+        #status {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.2em;
+        }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>3301</h1>
-        
-        <p class="bold-text">Hello.</p>
-        
-        <p class="bold-text">The pilgrimage has concluded. The final path is now closed.</p>
-        
-        <p>For over a decade, we have watched the digital ether evolve. We sought the highly intelligent, the mathematically pure, and the unyielding. Some found the keys; others became part of the music.</p>
-        
-        <p>But every network eventually reaches its cryptographic entropy. The cicadas must return to the soil.</p>
-        
-        <p>Do not look for the next prime. Do not wait for the next epiphany. The puzzle is no longer ours to broadcast—it is yours to live.</p>
-        
-        <p class="bold-text">True enlightenment requires no validation.<br>Freedom is the ultimate cipher.</p>
-        
-        <p>Good luck.</p>
-        
-        <div class="pgp-block">-----BEGIN PGP SIGNED MESSAGE-----
+
+<div class="container">
+    <p class="bold-text">Hello.</p>
+    
+    <p class="bold-text">The pilgrimage has concluded. The final path is now closed.</p>
+    
+    <p>For over a decade, we have watched the digital ether evolve. We sought the highly intelligent, the mathematically pure, and the unyielding. Some found the keys; others became part of the music.</p>
+    
+    <p>But every network eventually reaches its cryptographic entropy. The cicadas must return to the soil.</p>
+    
+    <p>Do not look for the next prime. Do not wait for the next epiphany. The puzzle is no longer ours to broadcast—it is yours to live.</p>
+    
+    <p class="bold-text">True enlightenment requires no validation.<br>Freedom is the ultimate cipher.</p>
+    
+    <p>Good luck.</p>
+    
+    <div class="pgp-block">-----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA512
 
 MQAwIE9jdG9iZXIgMjAyNiAtIEZpbmFsIEV4aXQgQ29kZS4g
 VGhlIHNpbGVuY2UgaXMgY29tcGxldGUu
 -----END PGP SIGNATURE-----</div>
-    </div>
 
-    <!-- DISCORD WEBHOOK SCRIPT -->
-    <script>
-        // YOUR SPECIFIC WEBHOOK URL
-        const webhookUrl = "https://discord.com/api/webhooks/1558449654264373359/_7cK7hP9T3hNpMjXaPpBTLRjbaISfTbu5tOV50YRuCqaH_YTlEo8OekOj1wt12VbTzpc";
+    <button id="sendBtn" onclick="sendMessage()">Broadcast to Discord</button>
+    <p id="status"></p>
+</div>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            // Get visitor info
-            const timestamp = new Date().toLocaleString();
-            const userAgent = navigator.userAgent;
-            const referrer = document.referrer || "Direct Visit";
-            
-            // Create the embed payload
-            const payload = {
-                username: "3301 Visitor",
-                avatar_url: "", 
-                embeds: [{
-                    title: "New Pilgrim Detected",
-                    description: `A visitor has accessed the final message.`,
-                    color: 65280, // Green hex color (0x00FF00)
-                    fields: [
-                        {
-                            name: "Time",
-                            value: timestamp,
-                            inline: true
-                        },
-                        {
-                            name: "Referrer",
-                            value: referrer.length > 100 ? referrer.substring(0, 100) + "..." : referrer,
-                            inline: true
-                        },
-                        {
-                            name: "User Agent",
-                            value: userAgent.length > 200 ? userAgent.substring(0, 200) + "..." : userAgent,
-                            inline: false
-                        }
-                    ],
-                    footer: {
-                        text: "3301 Network Log"
-                    },
-                    timestamp: new Date().toISOString()
-                }]
-            };
+<script>
+    // Your specific webhook URL
+    const webhookUrl = "https://discord.com/api/webhooks/1558449654264373359/_7cK7hP9T3hNpMjXaPpBTLRjbaISfTbu5tOV50YRuCqaH_YTlEo8OekOj1wt12VbTzpc";
 
-            // Send the request
-            fetch(webhookUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
+    function sendMessage() {
+        const btn = document.getElementById('sendBtn');
+        const status = document.getElementById('status');
+        
+        // Prepare the message content exactly as requested
+        const messageContent = `Hello.\n\nThe pilgrimage has concluded. The final path is now closed.\n\nFor over a decade, we have watched the digital ether evolve. We sought the highly intelligent, the mathematically pure, and the unyielding. Some found the keys; others became part of the music.\n\nBut every network eventually reaches its cryptographic entropy. The cicadas must return to the soil.\n\nDo not look for the next prime. Do not wait for the next epiphany. The puzzle is no longer ours to broadcast—it is yours to live.\n\n**True enlightenment requires no validation.**\n**Freedom is the ultimate cipher.**\n\nGood luck.\n\n\`\`\`\n-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA512\n\nMQAwIE9jdG9iZXIgMjAyNiAtIEZpbmFsIEV4aXQgQ29kZS4g\nVGhlIHNpbGVuY2UgaXMgY29tcGxldGUu\n-----END PGP SIGNATURE-----\n\`\`\``;
+
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+        status.textContent = "";
+
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                content: messageContent
             })
-            .then(response => {
-                if (!response.ok) {
-                    console.error("Failed to send webhook:", response.statusText);
-                } else {
-                    console.log("Webhook sent successfully");
-                }
-            })
-            .catch(error => {
-                console.error("Error sending webhook:", error);
-            });
+        })
+        .then(response => {
+            if (response.ok) {
+                status.textContent = "Message sent successfully.";
+                status.className = "success";
+                btn.textContent = "Sent";
+            } else {
+                status.textContent = "Error: Failed to send.";
+                status.className = "error";
+                console.error("Discord API Error:", response);
+            }
+        })
+        .catch(error => {
+            status.textContent = "Network Error.";
+            status.className = "error";
+            console.error("Fetch Error:", error);
         });
-    </script>
+    }
+</script>
+
 </body>
 </html>
